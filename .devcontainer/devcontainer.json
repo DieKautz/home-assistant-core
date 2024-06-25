@@ -10,6 +10,11 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
+  "mounts": [
+    "source=/home/malte/Projects/casambi-hass/casambi-bt-hass/custom_components/casambi_bt,target=/workspaces/home-assistant-core/config/custom_components/casambi_bt,type=bind",
+    "source=/home/malte/Projects/casambi-hass/casambi-bt,target=/workspaces/casambi-bt,type=bind",
+    "source=/run/dbus,target=/run/dbus,type=bind,ro=true"
+  ],
   // Port 5683 udp is used by Shelly integration
   "appPort": ["8123:8123", "5683:5683/udp"],
   "runArgs": ["-e", "GIT_EDITOR=code --wait"],
