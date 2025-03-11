@@ -56,7 +56,6 @@ def mock_legacy_pydrawise(
 
 @pytest.fixture
 def mock_pydrawise(
-    mock_auth: AsyncMock,
     user: User,
     controller: Controller,
     zones: list[Zone],
@@ -64,7 +63,7 @@ def mock_pydrawise(
     controller_water_use_summary: ControllerWaterUseSummary,
 ) -> Generator[AsyncMock]:
     """Mock Hydrawise."""
-    with patch("pydrawise.client.Hydrawise", autospec=True) as mock_pydrawise:
+    with patch("pydrawise.hybrid.HybridClient", autospec=True) as mock_pydrawise:
         user.controllers = [controller]
         controller.sensors = sensors
         mock_pydrawise.return_value.get_user.return_value = user
@@ -77,8 +76,8 @@ def mock_pydrawise(
 
 @pytest.fixture
 def mock_auth() -> Generator[AsyncMock]:
-    """Mock pydrawise Auth."""
-    with patch("pydrawise.auth.Auth", autospec=True) as mock_auth:
+    """Mock pydrawise HybridAuth."""
+    with patch("pydrawise.auth.HybridAuth", autospec=True) as mock_auth:
         yield mock_auth.return_value
 
 
@@ -187,6 +186,8 @@ def controller_water_use_summary() -> ControllerWaterUseSummary:
         total_active_use=332.6,
         total_inactive_use=13.0,
         active_use_by_zone_id={5965394: 120.1, 5965395: 0.0},
+        total_active_time=timedelta(seconds=123),
+        active_time_by_zone_id={5965394: timedelta(seconds=123), 5965395: timedelta()},
         unit="gal",
     )
 
@@ -214,6 +215,7 @@ def mock_config_entry() -> MockConfigEntry:
         data={
             CONF_USERNAME: "asfd@asdf.com",
             CONF_PASSWORD: "__password__",
+            CONF_API_KEY: "abc123",
         },
         unique_id="hydrawise-customerid",
         version=1,
